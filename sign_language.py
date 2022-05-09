@@ -1,21 +1,15 @@
-import imp
-from pickle import NONE
 import cv2
 import mediapipe as mp
 import numpy as np
 import pyautogui
 import imutils
-
+# if your cam is on the code mite not work
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands()
 mp_draw = mp.solutions.drawing_utils
 cap = cv2.VideoCapture(0)
-image = pyautogui.screenshot()
-image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-cv2.imwrite("in_memory_to_disk.png", image)
-pyautogui.screenshot("straight_to_disk.png")
-image = cv2.imread("straight_to_disk.png")
-cv2.imread("Screenshot", imutils.resize(image, width=600))
+
+
 
 finger_tips =[8, 12, 16, 20]
 thumb_tip= 4
@@ -35,32 +29,42 @@ while True:
                 lm_list.append(lm)
 
              #Code goes here   
+            finger_fold_status =[]
             for tip in finger_tips:
                 x,y = int(lm_list[tip] .x*w) , int(lm_list[tip].y*h)
                 cv2.circle(img, (x,y), 15, (255, 0, 0), cv2.FILLED)
             
-            finger_fold_status =[NONE] * x
-            if lm_list[tip] .x < lm_list[tip - 3].x:
-                cv2.circle(img, (x,y), 15, (0, 255, 0), cv2.FILLED)
-                finger_fold_status.append(True)
-            else:
-                finger_fold_status.append(False)
+
+                if lm_list[tip] .x < lm_list[tip - 3].x:
+                    cv2.circle(img, (x,y), 15, (0, 255, 0), cv2.FILLED)
+                    finger_fold_status.append(True)
+                else:
+                    finger_fold_status.append(False)
             
             if all(finger_fold_status):
-                if lm_list[thumb_tip-1].y <lm_list[thumb_tip-2].y:
-                    print("like")
-                    cv2.putText(img ,"like", (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 3)
+                
+                image = pyautogui.screenshot()
+                image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+                cv2.imwrite("in_memory_to_disk.png", image)
+                pyautogui.screenshot("straight_to_disk.png")
+                image = cv2.imread("straight_to_disk.png")
+                cv2.imread("Screenshot", imutils.resize(image, width=600))
 
-                if lm_list[thumb_tip].y > lm_list[thumb_tip-1].y >lm_list[thumb_tip-2].y:
-                    print("dislike")
-                    cv2.putText(img ,"dislike", (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,), 3)
+                #if lm_list[thumb_tip-1].y <lm_list[thumb_tip-2].y:
+                #    print("like")
+                 #   cv2.putText(img ,"like", (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 3)
+
+               # if lm_list[thumb_tip].y > lm_list[thumb_tip-1].y >lm_list[thumb_tip-2].y:
+                #    print("dislike")
+                #    cv2.putText(img ,"dislike", (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,), 3)
 
 
 
             mp_draw.draw_landmarks(img, hand_landmark,
             mp_hands.HAND_CONNECTIONS, mp_draw.DrawingSpec((0,0,255),2,2),
             mp_draw.DrawingSpec((0,255,0),4,2))
-    
 
-    cv2.imshow("hand tracking", img)
+    cv2.imshow("hand tracking",img)
     cv2.waitKey(1)
+            
+    
